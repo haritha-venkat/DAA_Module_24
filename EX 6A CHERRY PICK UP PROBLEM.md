@@ -1,5 +1,6 @@
 # EX 6A CHERRY PICK UP PROBLEM
 ## DATE:
+
 ## AIM:
 To Create a python program for the following problem statement.
 You are given an n x n grid representing a field of cherries, each cell is one of three possible integers.
@@ -12,13 +13,14 @@ After reaching (n - 1, n - 1), returning to (0, 0) by moving left or up through 
 When passing through a path cell containing a cherry, you pick it up, and the cell becomes an empty cell 0. If there is no valid path between (0, 0) and (n - 1, n - 1), then no cherries can be collected.
 
 
-
 ## Algorithm
-1. 
-2. 
-3. 
-4.  
-5.   
+
+1. Use a 3D DP array `dp[x1][y1][x2]` to store max cherries collected when two paths reach `(x1,y1)` and `(x2,y2)`.
+2. Compute `y2` from `x1, y1, x2` as `y2 = x1 + y1 - x2` to keep both paths synchronized on the same step.
+3. If out of bounds or cell is blocked (`-1`), return `-inf` to ignore invalid paths.
+4. Recursively explore all four previous states combining moves of both paths and add cherries collected (avoid double counting when paths overlap).
+5. Memoize and return the maximum cherries collected when both paths reach bottom-right `(n-1, n-1)`.
+
 
 ## Program:
 ```
@@ -26,13 +28,42 @@ When passing through a path cell containing a cherry, you pick it up, and the ce
 To implement the program for Cherry pickup problem.
 
 
-Developed by: 
-Register Number:  
+Developed by: haritha shree
+Register Number:  212222230046
 */
+class Solution:
+    def cherryPickup(self, grid):
+        n = len(grid)
+        ### add code here
+        dp=[[[-1]*n for _ in range(n)] for _ in range(n)]
+        def f(x1,y1,x2):
+            y2=x1+y1-x2
+            if x1<0 or y1<0 or x2<0 or y2<0 or grid[x1][y1]==-1 or grid[x2][y2]==-1:
+                return float('-inf')
+            if x1==0 and y1==0 and x2==0 and y2==0:
+                return grid[0][0]
+            if dp[x1][y1][x2]!=-1:
+                return dp[x1][y1][x2]
+            cherries=grid[x1][y1]
+            if x1!=x2 or y1!=y2:
+                cherries+=grid[x2][y2]
+            cherries+=max(
+                          f(x1-1,y1,x2-1),
+                           f(x1,y1-1,x2-1),
+                           f(x1-1,y1,x2),
+                           f(x1,y1-1,x2))
+            dp[x1][y1][x2]=cherries
+            return cherries
+        result= max(0,f(n-1,n-1,n-1))
+        return result
+obj=Solution()
+grid=[[0,1,-1],[1,0,-1],[1,1,1]]        
+print(obj.cherryPickup(grid))
 ```
 
 ## Output:
 
+![Screenshot 2025-05-16 184319](https://github.com/user-attachments/assets/000c522c-4e02-4da4-bb40-f46bf3d2aa5f)
 
 
 ## Result:
